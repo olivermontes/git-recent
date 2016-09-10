@@ -6,20 +6,63 @@
 ## list all local branches, sorted by last commit, formatted reall purdy
 ##
 
-format="\
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    -r|--remotes)
+    REMOTES="$1"
+    shift # past argument
+    ;;
+    -h|--heads)
+    HEADS="$1"
+    shift # past argument
+    ;;
+    --default)
+    DEFAULT=YES
+    ;;
+    *)
+            # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+formatlocal="\
 %(HEAD) %(color:yellow)%(refname:short)%(color:reset)|\
+%(color:bold red)%(objectname:short) %(color:bold green)(%(committerdate:relative)) %(color:blue)%(authorname) %(color:reset)%(color:yellow)%(upstream:track)%0a\
+  %(color:black) %(color:reset)|%(contents:subject)%0a\
+  |"
+
+formatremote="\
+%(HEAD) %(color:green)%(refname:short)%(color:reset)|\
 %(color:bold red)%(objectname:short) %(color:bold green)(%(committerdate:relative)) %(color:blue)%(authorname) %(color:reset)%(color:yellow)%(upstream:track)%0a\
   %(color:black) %(color:reset)|%(contents:subject)%0a\
   |"
 
 lessopts="--tabs=4 --quit-if-one-screen --RAW-CONTROL-CHARS --no-init"
 
-git for-each-ref \
-    --sort=-committerdate \
-    "refs/heads/"  \
-    --format="$format" \
-  | column -ts '|'  \
-  | less "$lessopts"
+## Debug
+## echo "Valor 1 ($1), Valor 2 ($REMOTES), Valor 3 ($HEADS)" 
+
+## Show local tracking Branch
+if [[ "$REMOTES" != "" ]]; then
+	git for-each-ref \
+	    --sort=-committerdate \
+	    "refs/remotes"  \
+	    --format="$formatremote" \
+	  | column -ts '|'
+fi
+
+if [[ -z "$REMOTES" ]]; then
+	git for-each-ref \
+	    --sort=-committerdate \
+	    "refs/heads"  \
+	    --format="$formatlocal" \
+	  | column -ts '|'  \
+	  | less "$lessopts"
+fi
 
 # The above command:
 #   for all known branches,
