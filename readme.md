@@ -6,6 +6,9 @@ Type `git recent` to see your latest local git branches
 
     git recent
 
+    Remote branch
+    git recent -r 
+
 
 ![git-recent screenshot](https://cloud.githubusercontent.com/assets/39191/17446638/039d4cee-5aff-11e6-9e11-4294f0020513.png)
 
